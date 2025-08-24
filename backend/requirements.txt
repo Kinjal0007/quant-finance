@@ -1,0 +1,34 @@
+# Core Framework
+fastapi==0.111.0
+uvicorn[standard]==0.30.1
+pydantic==2.10.4
+pydantic-settings==2.8.0
+
+# Database & ORM
+sqlalchemy==2.0.32
+alembic==1.14.0
+psycopg2-binary==2.9.9
+
+# GCP Services
+google-cloud-bigquery
+google-cloud-secret-manager
+google-cloud-storage
+google-cloud-pubsub
+
+# Financial Computing
+scikit-learn
+pandas
+numpy
+scipy
+
+# Utilities
+httpx==0.27.0
+python-dateutil==2.9.0
+python-dotenv==1.0.1
+
+# Development (optional)
+pytest
+pytest-asyncio
+black
+flake8
+isort

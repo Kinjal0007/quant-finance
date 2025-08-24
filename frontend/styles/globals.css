@@ -1,0 +1,12 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body { @apply bg-slate-50 text-slate-900; }
+.container { @apply max-w-5xl mx-auto p-6; }
+.card { @apply bg-white rounded-xl shadow p-6 mb-6; }
+h1 { @apply text-3xl font-bold mb-4; }
+h2 { @apply text-xl font-semibold mb-3; }
+label { @apply block text-sm font-medium mb-1; }
+input { @apply border rounded px-3 py-2 w-full; }
+button { @apply bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700; }
