@@ -1,11 +1,5 @@
 # Dependencies
 node_modules/
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-.pnpm-debug.log*
-
-# Python
 __pycache__/
 *.py[cod]
 *$py.class
@@ -23,7 +17,6 @@ parts/
 sdist/
 var/
 wheels/
-share/python-wheels/
 *.egg-info/
 .installed.cfg
 *.egg
@@ -37,34 +30,38 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+backend/.venv/
+services/*/.venv/
 
 # Database
 *.db
 *.sqlite
 *.sqlite3
-quant_finance.db
+backend/*.db
+backend/app.db
+backend/quant_finance.db
 
-# Environment variables
+# Google Cloud SDK (should not be in repo)
+backend/User/google-cloud-sdk/
+backend/User/.config/
+backend/User/.gsutil/
+
+# Environment variables and secrets
 .env
 .env.local
 .env.development.local
 .env.test.local
 .env.production.local
+*.env
+services/*/.env
 
-# IDE
+# IDE and editor files
 .vscode/
 .idea/
 *.swp
 *.swo
 *~
-
-# OS
 .DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
 Thumbs.db
 
 # Logs
@@ -117,7 +114,7 @@ jspm_packages/
 .parcel-cache
 
 # Next.js build output
-.next
+.next/
 out/
 
 # Nuxt.js build / generate output
@@ -136,37 +133,23 @@ public
 tmp/
 temp/
 
-# Editor directories and files
-.vscode/*
-!.vscode/extensions.json
-.idea
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
-
-# GCP
-*.json
-!package.json
-!package-lock.json
-!tsconfig.json
-!tailwind.config.js
-!postcss.config.js
-!next.config.js
-
-# Local development
-.local
-.local.*
-
-# Test coverage
-htmlcov/
+# Python
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
 .coverage
-.coverage.*
+.pytest_cache/
+.tox/
+.cache
+nosetests.xml
 coverage.xml
 *.cover
 .hypothesis/
-.pytest_cache/
+
+# Alembic
+alembic.ini.bak
 
 # Jupyter Notebook
 .ipynb_checkpoints
@@ -174,15 +157,8 @@ coverage.xml
 # pyenv
 .python-version
 
-# pipenv
-Pipfile.lock
-
-# PEP 582
-__pypackages__/
-
-# Celery stuff
+# celery beat schedule file
 celerybeat-schedule
-celerybeat.pid
 
 # SageMath parsed files
 *.sage.py
@@ -205,35 +181,52 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-# Pytype static type analyzer
-.pytype/
+# Local development
+local/
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
 
-# Cython debug symbols
-cython_debug/
+# Docker
+.dockerignore
+docker-compose.override.yml
+
+# Kubernetes
+*.kubeconfig
+
+# Terraform
+*.tfstate
+*.tfstate.*
+.terraform/
+.terraform.lock.hcl
+
+# Ansible
+*.retry
 
 # Backup files
 *.bak
 *.backup
 *.old
+*.orig
+*.tmp
+*.temp
 
-# Compiled files
-*.com
-*.class
-*.dll
-*.exe
-*.o
-*.so
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
 
-# Archives
-*.7z
-*.dmg
-*.gz
-*.iso
-*.jar
-*.rar
-*.tar
-*.zip
+# Windows
+*.lnk
 
-# Local configuration
-config.local.*
-settings.local.*
+# Application specific
+backend/app.db
+backend/quant_finance.db
+frontend/.next/
+frontend/node_modules/
+services/*/.env
+services/*/.venv/

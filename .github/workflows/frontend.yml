@@ -1,0 +1,77 @@
+name: Build and Deploy Frontend
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "frontend/**"
+  pull_request:
+    branches: [main]
+    paths:
+      - "frontend/**"
+
+env:
+  GCP_PROJECT: ${{ secrets.GCP_PROJECT }}
+  GCP_REGION: ${{ secrets.GCP_REGION || 'europe-west3' }}
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./frontend
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run linting
+        run: npm run lint
+
+      - name: Run type checking
+        run: npm run type-check
+
+      - name: Run tests
+        run: npm test
+
+      - name: Build application
+        run: npm run build
+
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Google Auth
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Deploy to Cloud Storage
+        run: |
+          cd frontend
+          npm run build
+          gsutil -m rsync -r -d .next gs://${{ secrets.FRONTEND_BUCKET }}/.next
+          gsutil -m rsync -r -d public gs://${{ secrets.FRONTEND_BUCKET }}/public
+          gsutil -m cp .next/static/** gs://${{ secrets.FRONTEND_BUCKET }}/.next/static/
+
+          # Update bucket website configuration
+          gsutil web set -m index.html -e 404.html gs://${{ secrets.FRONTEND_BUCKET }}
+
+          echo "Frontend deployed to: https://storage.googleapis.com/${{ secrets.FRONTEND_BUCKET }}/"
