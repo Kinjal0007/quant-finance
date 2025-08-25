@@ -1,18 +1,22 @@
 import "../styles/globals.css";
 import type { AppProps } from 'next/app'
 import Navbar from "../components/Navbar";
-
-// Initialize MSW in development
-if (process.env.NODE_ENV === 'development') {
-  import('../mocks/browser').then(({ worker }) => {
-    worker.start({
-      onUnhandledRequest: 'bypass',
-    })
-    console.log('🔧 MSW worker started - API requests will be mocked')
-  }).catch(console.error)
-}
+import { useEffect } from 'react';
 
 export default function App({ Component, pageProps }: AppProps) {
+  // Initialize MSW only in the browser
+  useEffect(() => {
+    if (process.env.NODE_ENV === 'development' && typeof window !== 'undefined') {
+      import('../mocks/browser').then(({ startWorker }) => {
+        startWorker().then(() => {
+          console.log('🔧 MSW worker started - API requests will be mocked')
+        }).catch((error) => {
+          console.error('Failed to start MSW worker:', error)
+        })
+      }).catch(console.error)
+    }
+  }, []);
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100">
       <Navbar />

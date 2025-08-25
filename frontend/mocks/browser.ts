@@ -4,12 +4,12 @@ import { handlers } from './handlers'
 // This configures a Service Worker using MSW
 export const worker = setupWorker(...handlers)
 
-// Enable MSW in development only
-if (process.env.NODE_ENV === 'development') {
-  // Start the worker
-  worker.start({
+// Configure the worker with the correct service worker path
+export const startWorker = () => {
+  return worker.start({
     onUnhandledRequest: 'bypass', // Don't warn about unhandled requests
+    serviceWorker: {
+      url: '/mockServiceWorker.js',
+    },
   })
-  
-  console.log('🔧 MSW worker started - API requests will be mocked')
 }

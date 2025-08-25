@@ -1,250 +1,163 @@
-# 🚀 Quant Finance Platform
+# Quant Finance Platform
 
-A production-ready quantitative finance platform built with FastAPI, Next.js, and Google Cloud Platform. Features Monte Carlo simulations, Markowitz portfolio optimization, Black-Scholes option pricing, and async job processing.
+A production-ready quantitative finance platform built on GCP with Monte Carlo simulations, portfolio optimization, and option pricing.
 
-## ✨ Features
+## Architecture
 
-- **📊 Financial Models**: Monte Carlo, Markowitz, Black-Scholes, Backtesting
-- **🔄 Async Processing**: Pub/Sub + Cloud Run worker pattern
-- **🌐 Modern UI**: Next.js 14 + TypeScript + Tailwind CSS
-- **☁️ Cloud Native**: GCP Cloud Run, BigQuery, Cloud Storage
-- **🔧 Development Ready**: Fixture data + MSW mocking for local development
-- **📈 Real-time Jobs**: Job creation, monitoring, and result visualization
+- **Backend**: FastAPI with async job processing
+- **Frontend**: Next.js with TypeScript and Tailwind CSS
+- **Data**: BigQuery for prices, GCS for artifacts, Cloud SQL for metadata
+- **Processing**: Cloud Run services with Pub/Sub for job queuing
+- **Data Sources**: EOD Historical Data (EODHD) and Twelve Data
 
-## 🏗️ Architecture
-
-```
-┌─────────────────┐    ┌──────────────┐    ┌─────────────────┐
-│   Frontend      │────│   Backend    │────│   Pub/Sub       │
-│   (Next.js)     │    │   (FastAPI)  │    │   (Message Q)   │
-│   Port 3000     │    │   Port 8080  │    │                 │
-└─────────────────┘    └──────────────┘    └─────────────────┘
-         │                       │                       │
-         │                       │                       │
-┌────────▼──────┐    ┌──────────▼──────┐    ┌──────────────▼──┐
-│   Cloud       │    │   BigQuery     │    │   Cloud         │
-│   Storage     │    │   (Data)       │    │   Storage       │
-│   (Frontend)  │    │                 │    │   (Artifacts)   │
-└───────────────┘    └─────────────────┘    └─────────────────┘
-```
-
-## 🚀 Quick Start
+## Quick Start
 
 ### Prerequisites
 
-- Python 3.9+
+- Python 3.11+
 - Node.js 18+
-- GCP Project (optional for local development)
+- GCP Project with billing enabled
+- Docker
 
-### 1. Clone Repository
+### Local Development
 
-```bash
-git clone https://github.com/Kinjal0007/quant-finance.git
-cd quant-finance
-```
-
-### 2. Backend Setup
+#### Backend Setup
 
 ```bash
 cd backend
-
-# Create virtual environment
-python3 -m venv .venv
+python -m venv .venv
 source .venv/bin/activate  # On Windows: .venv\Scripts\activate
-
-# Install dependencies
 pip install -r requirements.txt
 
-# Set up environment
+# Set environment variables
 cp env.example .env
-# Edit .env with your configuration
+# Edit .env with your values
 
 # Run database migrations
-export USE_SQLITE=true
 alembic upgrade head
 
-# Start backend (fixture mode - no API keys needed)
-export USE_FIXTURE=true
-uvicorn app.main:app --reload --port 8080
+# Start backend server
+uvicorn app.main:app --port 8080 --host 127.0.0.1
 ```
 
-### 3. Frontend Setup
+#### Frontend Setup
 
 ```bash
 cd frontend
-
-# Install dependencies
 npm install
 
-# Set up environment (optional)
-cp env.example .env
+# Set environment variables
+cp env.example .env.local
+# Edit .env.local with your values
 
 # Start development server
 npm run dev
 ```
 
-### 4. Access the Platform
+### Environment Variables
 
-- **Frontend**: http://localhost:3000
-- **Backend API**: http://localhost:8080
-- **API Docs**: http://localhost:8080/docs
+#### Backend (.env)
 
-## 🔧 Development Modes
+- `DATABASE_URL`: PostgreSQL connection string
+- `USE_SQLITE`: Use SQLite for local development
+- `GCP_PROJECT`: GCP Project ID
+- `EODHD_API_KEY`: EOD Historical Data API key
+- `TWELVE_DATA_API_KEY`: Twelve Data API key
+- `USE_FIXTURE`: Use mock data for development
 
-### Mode 1: Frontend Only (MSW)
+#### Frontend (.env.local)
 
-```bash
-cd frontend
-npm run dev
-# All API calls are mocked - perfect for UI development
-```
+- `NEXT_PUBLIC_API_BASE`: Backend API URL
 
-### Mode 2: Frontend + Backend (Fixtures)
+## Deployment
 
-```bash
-# Terminal 1: Backend with demo data
-cd backend
-export USE_FIXTURE=true
-uvicorn app.main:app --reload --port 8080
+### GCP Setup
 
-# Terminal 2: Frontend
-cd frontend
-npm run dev
-# API calls hit real backend with demo data
-```
+1. Enable required APIs:
 
-### Mode 3: Production Mode
+   - Cloud Run
+   - BigQuery
+   - Cloud SQL
+   - Cloud Storage
+   - Pub/Sub
+   - Secret Manager
 
-```bash
-# Configure real API keys in .env
-export USE_FIXTURE=false
-# Start services with live data
-```
+2. Create service account with required permissions
 
-## 📁 Project Structure
+3. Set GitHub Secrets:
+   - `GCP_SA_KEY`: Service account JSON key
+   - `GCP_PROJECT`: Project ID
+   - `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, `DB_PASSWORD`: Database credentials
+   - `QFP_ARTIFACTS_BUCKET`: GCS bucket for artifacts
+   - `FRONTEND_ORIGIN`: Frontend domain for CORS
+   - `FRONTEND_API_BASE`: Backend API URL
 
-```
-quant-finance-platform/
-├── backend/                 # FastAPI backend
-│   ├── app/                # Application code
-│   │   ├── api/           # API endpoints
-│   │   ├── models/        # Financial models
-│   │   ├── schemas/       # Pydantic schemas
-│   │   └── services/      # Business logic
-│   ├── worker/            # Async job processor
-│   │   ├── fixtures/      # Demo data
-│   │   └── demo_loader.py # Fixture data loader
-│   ├── alembic/           # Database migrations
-│   └── requirements.txt   # Python dependencies
-├── frontend/               # Next.js frontend
-│   ├── components/        # React components
-│   ├── pages/            # Next.js pages
-│   ├── mocks/            # MSW API mocking
-│   ├── lib/              # Utilities
-│   └── package.json      # Node.js dependencies
-├── .github/               # GitHub Actions workflows
-└── README.md              # This file
-```
+### CI/CD
 
-## 🎯 API Endpoints
+GitHub Actions automatically deploy on push to main:
 
-### Jobs API
+- **Backend**: FastAPI service
+- **Frontend**: Next.js application
+- **Worker**: Job processing service
+- **Ingestors**: Data ingestion services
 
-- `POST /api/v1/jobs/` - Create financial model job
-- `GET /api/v1/jobs/` - List all jobs
-- `GET /api/v1/jobs/{id}` - Get job details
-- `DELETE /api/v1/jobs/{id}` - Cancel job
+## Features
 
 ### Financial Models
 
-- **Monte Carlo**: GBM simulations with risk metrics
-- **Markowitz**: Global minimum-variance optimization
-- **Black-Scholes**: Option pricing with Greeks
-- **Backtesting**: Strategy evaluation framework
+- Monte Carlo Simulation (Geometric Brownian Motion)
+- Markowitz Portfolio Optimization
+- Black-Scholes Option Pricing
+- Backtesting Framework
 
-## 🚀 Deployment
+### Data Pipeline
 
-### GitHub Actions (Recommended)
+- Real-time and historical price data
+- Corporate actions and fundamentals
+- Automated data ingestion and processing
+- BigQuery data warehouse
 
-1. **Configure Secrets** in your repository:
+### Job System
 
-   ```bash
-   GCP_PROJECT=your-project-id
-   GCP_REGION=europe-west3
-   GCP_SA_KEY={"type": "service_account", ...}
-   ```
+- Async job processing with Pub/Sub
+- Progress tracking and result storage
+- GCS artifact management
+- Scalable worker architecture
 
-2. **Push to main branch** triggers automatic deployment
+## API Endpoints
 
-### Manual Deployment
+- `POST /api/v1/jobs/`: Create new job
+- `GET /api/v1/jobs/`: List user jobs
+- `GET /api/v1/jobs/{id}`: Get job details
+- `DELETE /api/v1/jobs/{id}`: Cancel job
+
+## Development
+
+### Running Tests
 
 ```bash
 # Backend
 cd backend
-docker build -t quant-finance-api .
-gcloud run deploy quant-finance-api --image quant-finance-api
+pytest
 
 # Frontend
 cd frontend
-npm run build
-gsutil -m rsync -r .next gs://your-bucket/
-```
-
-## 🔒 Security
-
-- **No API keys** in repository
-- **Environment variables** for configuration
-- **Service accounts** for GCP authentication
-- **CORS protection** enabled
-- **Input validation** with Pydantic
-
-## 🧪 Testing
-
-### Backend
-
-```bash
-cd backend
-pytest -v
-```
-
-### Frontend
-
-```bash
-cd frontend
 npm test
+```
+
+### Code Quality
+
+```bash
+# Backend
+flake8 app/
+black app/
+isort app/
+
+# Frontend
+npm run lint
 npm run type-check
 ```
 
-## 📚 Documentation
+## License
 
-- [Backend README](backend/README.md) - Backend setup and API
-- [Frontend README](frontend/README.md) - Frontend development
-- [GitHub Actions](.github/README.md) - CI/CD workflows
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests if applicable
-5. Submit a pull request
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 🙏 Acknowledgments
-
-- **FastAPI** for the backend framework
-- **Next.js** for the frontend framework
-- **Tailwind CSS** for styling
-- **Google Cloud Platform** for infrastructure
-
-## 📞 Support
-
-- **Issues**: [GitHub Issues](https://github.com/Kinjal0007/quant-finance/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/Kinjal0007/quant-finance/discussions)
-
----
-
-**Built with ❤️ for quantitative finance enthusiasts**
+MIT License

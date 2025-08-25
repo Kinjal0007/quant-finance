@@ -36,6 +36,7 @@ export default function Navbar() {
           <NavLink href="/markowitz">Markowitz</NavLink>
           <NavLink href="/blackscholes">Black–Scholes</NavLink>
           <NavLink href="/jobs">Jobs</NavLink>
+          <NavLink href="/test-msw">Test MSW</NavLink>
         </div>
       </div>
     </nav>

@@ -13,6 +13,7 @@ on:
 env:
   GCP_PROJECT: ${{ secrets.GCP_PROJECT }}
   GCP_REGION: ${{ secrets.GCP_REGION || 'europe-west3' }}
+  SERVICE_NAME: quant-finance-frontend
 
 jobs:
   test:
@@ -22,8 +23,7 @@ jobs:
         working-directory: ./frontend
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -35,10 +35,9 @@ jobs:
         run: npm ci
 
       - name: Run linting
-        run: npm run lint
-
-      - name: Run type checking
-        run: npm run type-check
+        run: |
+          npm run lint
+          npm run type-check
 
       - name: Run tests
         run: npm test
@@ -46,14 +45,13 @@ jobs:
       - name: Build application
         run: npm run build
 
-  deploy:
+  build-and-deploy:
     needs: test
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
       - name: Google Auth
         uses: google-github-actions/auth@v2
@@ -63,15 +61,23 @@ jobs:
       - name: Set up Cloud SDK
         uses: google-github-actions/setup-gcloud@v2
 
-      - name: Deploy to Cloud Storage
+      - name: Configure Docker
+        run: gcloud auth configure-docker
+
+      - name: Build and push image
         run: |
           cd frontend
-          npm run build
-          gsutil -m rsync -r -d .next gs://${{ secrets.FRONTEND_BUCKET }}/.next
-          gsutil -m rsync -r -d public gs://${{ secrets.FRONTEND_BUCKET }}/public
-          gsutil -m cp .next/static/** gs://${{ secrets.FRONTEND_BUCKET }}/.next/static/
+          docker build -t gcr.io/$GCP_PROJECT/$SERVICE_NAME:${{ github.sha }} .
+          docker push gcr.io/$GCP_PROJECT/$SERVICE_NAME:${{ github.sha }}
 
-          # Update bucket website configuration
-          gsutil web set -m index.html -e 404.html gs://${{ secrets.FRONTEND_BUCKET }}
-
-          echo "Frontend deployed to: https://storage.googleapis.com/${{ secrets.FRONTEND_BUCKET }}/"
+      - name: Deploy to Cloud Run
+        run: |
+          gcloud run deploy $SERVICE_NAME \
+            --image gcr.io/$GCP_PROJECT/$SERVICE_NAME:${{ github.sha }} \
+            --project $GCP_PROJECT \
+            --region $GCP_REGION \
+            --allow-unauthenticated \
+            --set-env-vars NEXT_PUBLIC_API_BASE=${{ secrets.FRONTEND_API_BASE }},NODE_ENV=production \
+            --memory 1Gi \
+            --cpu 1 \
+            --max-instances 10
