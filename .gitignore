@@ -114,6 +114,9 @@ jspm_packages/
 
 # Next.js build output
 .next
+out/
+build/
+dist/
 
 # Nuxt.js build / generate output
 .nuxt
