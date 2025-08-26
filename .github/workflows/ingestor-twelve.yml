@@ -1,6 +1,7 @@
 name: Build and Deploy Twelve Data Ingestor
 
 on:
+  workflow_dispatch:
   push:
     branches: [main]
     paths:
