@@ -11,9 +11,9 @@ import pandas as pd
 from fastapi import FastAPI, HTTPException, Request, status
 from fastapi.responses import JSONResponse
 
-from .bq import get_bq_loader
-from .gcs import get_gcs_writer
-from .models import run_model
+from bq import get_bq_loader
+from gcs import get_gcs_writer
+from models import run_model
 
 # Create FastAPI app
 app = FastAPI(
@@ -21,6 +21,16 @@ app = FastAPI(
     description="Worker service for processing async financial modeling jobs",
     version="1.0.0",
 )
+
+
+@app.get("/")
+async def root():
+    """Root endpoint for basic connectivity test."""
+    return {
+        "service": "quant-finance-worker",
+        "status": "running",
+        "timestamp": datetime.utcnow().isoformat(),
+    }
 
 
 @app.get("/healthz")
