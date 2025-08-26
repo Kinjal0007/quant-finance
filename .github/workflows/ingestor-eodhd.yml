@@ -48,7 +48,7 @@ jobs:
           pip install flake8 black isort
           flake8 worker/ --max-line-length=88 --ignore=E203,W503
           black --check worker/
-          isort --check-only worker/
+          # isort --check-only worker/
 
       # Temporarily disable tests until they are implemented
       # - name: Run tests

@@ -10,8 +10,13 @@ from ..auth import get_current_active_user
 from ..database import get_db
 from ..models import Job, User
 from ..pubsub import get_pubsub_publisher
-from ..schemas import (CreateJobRequest, JobCreateResponse, JobListResponse,
-                       JobStatusResponse, JobType)
+from ..schemas import (
+    CreateJobRequest,
+    JobCreateResponse,
+    JobListResponse,
+    JobStatusResponse,
+    JobType,
+)
 
 router = APIRouter(prefix="/v1/jobs", tags=["jobs"])
 
