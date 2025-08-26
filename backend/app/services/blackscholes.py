@@ -1,7 +1,10 @@
 import numpy as np
 from scipy.stats import norm
 
-def black_scholes(S: float, K: float, T: float, r: float, sigma: float, option_type: str = "call"):
+
+def black_scholes(
+    S: float, K: float, T: float, r: float, sigma: float, option_type: str = "call"
+):
     """Black-Scholes price for European call/put (no dividends)."""
     if T <= 0 or sigma <= 0 or S <= 0 or K <= 0:
         raise ValueError("Inputs must be positive and T,sigma > 0")

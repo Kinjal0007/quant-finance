@@ -19,15 +19,20 @@ DB_PASSWORD = os.getenv("DB_PASSWORD", "password")
 # Construct database URL
 if os.getenv("DB_USE_UNIX_SOCKET"):
     # Cloud SQL Unix socket connection
-    DB_URL = f"postgresql+psycopg2://{DB_USER}:{DB_PASSWORD}@/{DB_NAME}?host=/cloudsql/{DB_HOST}"
+    DB_URL = (
+        f"postgresql+psycopg2://{DB_USER}:{DB_PASSWORD}@/{DB_NAME}"
+        f"?host=/cloudsql/{DB_HOST}"
+    )
 elif os.getenv("USE_SQLITE", "false").lower() == "true" or not os.getenv("DB_HOST"):
     # Use SQLite for local development
     DB_URL = "sqlite:///./quant_finance.db"
 else:
     # Standard TCP connection
     try:
-        import psycopg2
-        DB_URL = f"postgresql+psycopg2://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+        DB_URL = (
+            f"postgresql+psycopg2://{DB_USER}:{DB_PASSWORD}"
+            f"@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+        )
     except ImportError:
         # Fallback to SQLite if psycopg2 is not available
         print("Warning: psycopg2 not available, using SQLite for local development")
@@ -39,7 +44,7 @@ if "sqlite" in DB_URL:
         DB_URL,
         connect_args={"check_same_thread": False},
         poolclass=StaticPool,
-        echo=True  # Enable SQL logging for debugging
+        echo=True,  # Enable SQL logging for debugging
     )
 else:
     engine = create_engine(

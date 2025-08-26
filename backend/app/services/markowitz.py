@@ -1,5 +1,6 @@
 import numpy as np
 
+
 def markowitz_optimization(returns: np.ndarray):
     """Compute global minimum-variance portfolio (long-only weights sum to 1).
 
@@ -10,7 +11,7 @@ def markowitz_optimization(returns: np.ndarray):
         dict with weights (list), expected_return, volatility
     """
     mean_returns = np.mean(returns, axis=0)  # (n_assets,)
-    cov_matrix = np.cov(returns.T)           # (n_assets, n_assets)
+    cov_matrix = np.cov(returns.T)  # (n_assets, n_assets)
     n = mean_returns.shape[0]
 
     # Add small ridge to avoid singular matrix
@@ -25,8 +26,4 @@ def markowitz_optimization(returns: np.ndarray):
     port_ret = float(w @ mean_returns)
     port_vol = float(np.sqrt(w @ cov_matrix @ w))
 
-    return {
-        "weights": w.tolist(),
-        "expected_return": port_ret,
-        "volatility": port_vol
-    }
+    return {"weights": w.tolist(), "expected_return": port_ret, "volatility": port_vol}

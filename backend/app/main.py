@@ -7,7 +7,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from .api import jobs
-from .database import init_db, check_db_connection
+from .database import check_db_connection, init_db
 from .pubsub import get_pubsub_publisher
 
 
@@ -16,23 +16,23 @@ async def lifespan(app: FastAPI):
     """Application lifespan events."""
     # Startup
     print("Starting Quant Finance Platform API...")
-    
+
     # Initialize database
     try:
         init_db()
         print("Database initialized successfully")
     except Exception as e:
         print(f"Warning: Database initialization failed: {e}")
-    
+
     # Check connections
     db_status = "connected" if check_db_connection() else "disconnected"
     pubsub_status = "connected" if get_pubsub_publisher().publisher else "disconnected"
-    
+
     print(f"Database: {db_status}")
     print(f"Pub/Sub: {pubsub_status}")
-    
+
     yield
-    
+
     # Shutdown
     print("Shutting down Quant Finance Platform API...")
 
@@ -42,7 +42,7 @@ app = FastAPI(
     title="Quant Finance Platform API",
     description="Async financial modeling and analysis API",
     version="1.0.0",
-    lifespan=lifespan
+    lifespan=lifespan,
 )
 
 # CORS configuration
@@ -65,7 +65,7 @@ async def root():
     return {
         "message": "Quant Finance Platform API",
         "version": "1.0.0",
-        "status": "running"
+        "status": "running",
     }
 
 
@@ -74,13 +74,13 @@ async def health():
     """Health check endpoint."""
     db_status = "connected" if check_db_connection() else "disconnected"
     pubsub_status = "connected" if get_pubsub_publisher().publisher else "disconnected"
-    
+
     return {
         "status": "ok",
         "timestamp": "2024-01-15T12:00:00Z",
         "version": "1.0.0",
         "database": db_status,
-        "pubsub": pubsub_status
+        "pubsub": pubsub_status,
     }
 
 
