@@ -213,7 +213,7 @@ cd backend && source .venv/bin/activate && uvicorn app.main:app --port 8080
 │   (Next.js)     │    │   (FastAPI)  │    │   (Message Q)   │
 │   Port 3000     │    │   Port 8080  │    │                 │
 └─────────────────┘    └──────────────┘    └─────────────────┘
-                                                     │
+          │                     │                   │
 ┌─────────────────┐    ┌──────────────┐             │
 │   SQLite DB     │────│   Worker     │─────────────┘
 │   (Local)       │    │   (Cloud Run)│

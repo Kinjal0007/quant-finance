@@ -85,21 +85,6 @@ CREATE TABLE IF NOT EXISTS `${GCP_PROJECT}.${BQ_DATASET_RAW}.vendor_symbol_map` 
 ) CLUSTER BY vendor,
 symbol;
 
--- Legacy Finnhub table (keep for backward compatibility, mark deprecated)
-CREATE TABLE IF NOT EXISTS `${GCP_PROJECT}.${BQ_DATASET_RAW}.eq_ohlcv_legacy` (
-    symbol STRING NOT NULL,
-    ts TIMESTAMP NOT NULL,
-    open FLOAT64,
-    high FLOAT64,
-    low FLOAT64,
-    close FLOAT64,
-    volume FLOAT64,
-    source STRING,
-    ingest_time TIMESTAMP,
-)
-PARTITION BY
-    DATE(ts) CLUSTER BY symbol;
-
 -- Curated Views
 CREATE VIEW IF NOT EXISTS `${GCP_PROJECT}.${BQ_DATASET_CURATED}.v_daily_close` AS
 SELECT
