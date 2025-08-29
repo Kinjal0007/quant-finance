@@ -15,23 +15,23 @@ FastAPI-based REST API for the Quant Finance Platform, handling job creation, da
 ```
 ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
 │   Frontend      │    │   Backend API   │    │   Worker        │
-│   (Next.js)     │◄──►│   (FastAPI)     │◄──►│   Service      │
+│   (Next.js)     │◄──►│   (FastAPI)     │◄──►│   Service       │
 │                 │    │                 │    │                 │
-│ • Job Forms     │    │ • Job Creation  │    │ • Model        │
-│ • Monitoring    │    │ • Job Status    │    │   Execution    │
-│ • Results       │    │ • User Mgmt     │    │ • Data         │
-│ • Navigation    │    │ • Auth          │    │   Processing   │
+│ • Job Forms     │    │ • Job Creation  │    │ • Model         │
+│ • Monitoring    │    │ • Job Status    │    │   Execution     │
+│ • Results       │    │ • User Mgmt     │    │ • Data          │
+│ • Navigation    │    │ • Auth          │    │   Processing    │
 └─────────────────┘    └─────────────────┘    └─────────────────┘
            │                       │                       │
            │                       ▼                       │
-          │              ┌─────────────────┐             │
-          │              │   Pub/Sub       │             │
-          │              │   (Job Queue)   │             │
-          │              │                 │             │
-          │              │ • Async Jobs    │             │
-          │              │ • Status Updates│             │
-          │              │ • Error Handling│             │
-          │              └─────────────────┘             │
+           │              ┌─────────────────┐              │
+           │              │   Pub/Sub       │              │
+           │              │   (Job Queue)   │              │
+           │              │                 │              │
+           │              │ • Async Jobs    │              │
+           │              │ • Status Updates│              │
+           │              │ • Error Handling│              │
+           │              └─────────────────┘              │
            │                       │                       │
            ▼                       ▼                       ▼
   ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
