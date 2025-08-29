@@ -84,4 +84,6 @@ jobs:
             --set-env-vars NEXT_PUBLIC_API_BASE=${{ secrets.FRONTEND_API_BASE }},NODE_ENV=production \
             --memory 1Gi \
             --cpu 1 \
-            --max-instances 10
+            --max-instances 10 \
+            --timeout 900 \
+            --port 8080
