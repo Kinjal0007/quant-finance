@@ -36,6 +36,10 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      # Clean build cache to avoid stale cache issues
+      - name: Clean build cache
+        run: rm -rf .next
+
       # Temporarily disable linting and type-checking until scripts are implemented
       # - name: Run linting
       #   run: |
